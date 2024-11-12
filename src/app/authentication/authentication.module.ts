@@ -12,10 +12,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { AuthenticationService } from './services/authentication.service';
 import { HttpClientModule } from '@angular/common/http';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatIconModule } from '@angular/material/icon';
+import { RegisterStore } from './components/register/register.store';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
   declarations: [
-    RegisterComponent
+    RegisterComponent,
   ],
   imports: [
     CommonModule,
@@ -27,13 +30,16 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     MatFormFieldModule,
     MatInputModule,
     MatSnackBarModule,
-    MatButtonModule
+    MatButtonModule,
+    MatIconModule,
+    MatProgressSpinnerModule
   ],
   exports: [
     RegisterComponent
   ],
   providers: [
-    AuthenticationService
+    AuthenticationService,
+    RegisterStore
   ]
 })
 export class AuthenticationModule { }

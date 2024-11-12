@@ -1,7 +1,8 @@
 import { FormControl, ValidationErrors } from '@angular/forms';
 
+const LETTERS_REGEXP = /^[a-zA-Z. ]*$/;
+
 export const ONLY_LETTERS_VALIDATOR_IDENTIFIER: string = 'onlyLetters';
-export const LETTERS_REGEXP = /^[a-zA-Z. ]*$/;
 export function stringContainsOnlyLettersValidator(control: FormControl): ValidationErrors {
   const { value } = control;
 

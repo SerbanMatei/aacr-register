@@ -1,22 +1,25 @@
 import { TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RegisterComponent } from './register.component';
-import { AuthenticationService } from '../../services/authentication.service';
 import { of } from 'rxjs';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ONLY_LETTERS_VALIDATOR_IDENTIFIER, PASSWORD_VALIDATOR_IDENTIFIER } from '../../validators';
+import { RegisterStore } from './register.store';
+import { MatIconModule } from '@angular/material/icon';
 
 describe('RegisterComponent (Jest)', () => {
   let component: RegisterComponent;
-  let authServiceMock: { registerUser: jest.Mock };
+  let registerStoreMock: any;
 
   beforeEach(() => {
-    authServiceMock = {
+    registerStoreMock = {
+      loading$: of(false),
+      status$: of('notStarted'),
       registerUser: jest.fn()
     };
 
@@ -29,10 +32,11 @@ describe('RegisterComponent (Jest)', () => {
         MatFormFieldModule,
         MatInputModule,
         MatSnackBarModule,
-        MatButtonModule
+        MatButtonModule,
+        MatIconModule
       ],
       providers: [
-        { provide: AuthenticationService, useValue: authServiceMock }
+        { provide: RegisterStore, useValue: registerStoreMock }
       ]
     }).compileComponents();
 
@@ -104,8 +108,8 @@ describe('RegisterComponent (Jest)', () => {
     });
   });
 
-  it('should call the register method of AuthenticationService on form submit', () => {
-    authServiceMock.registerUser.mockReturnValue(of(true));
+  it('should call the register method on form submit', () => {
+    registerStoreMock.registerUser.mockReturnValue(of(true));
     component.registerFormGroup.setValue({
       username: 'username',
       password: 'strongPassword1!',
@@ -115,7 +119,7 @@ describe('RegisterComponent (Jest)', () => {
 
     component.registerUser();
 
-    expect(authServiceMock.registerUser).toHaveBeenCalledWith(expect.objectContaining({
+    expect(registerStoreMock.registerUser).toHaveBeenCalledWith(expect.objectContaining({
       username: 'username',
       password: 'strongPassword1!',
       email: 'user@gmail.com',
@@ -133,6 +137,6 @@ describe('RegisterComponent (Jest)', () => {
 
     component.registerUser();
 
-    expect(authServiceMock.registerUser).not.toHaveBeenCalled();
+    expect(registerStoreMock.registerUser).not.toHaveBeenCalled();
   });
 });
