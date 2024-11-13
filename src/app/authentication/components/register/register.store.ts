@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { ComponentStore } from "@ngrx/component-store";
 import { AuthenticationService } from "../../services/authentication.service";
-import { delay, exhaustMap, Observable, tap } from "rxjs";
+import { catchError, delay, EMPTY, exhaustMap, Observable, tap } from "rxjs";
 import { ActionResponse, RegistrationModel } from "../../models/view-models";
 
 export type RegisterStatus = 'notStarted' | 'success' | 'error';
@@ -51,7 +51,8 @@ export class RegisterStore extends ComponentStore<RegisterState> {
               this.setStatus('error');
               this.setLoading(false);
             }
-          })
+          }),
+          catchError(() => EMPTY)
         )
       )
     )

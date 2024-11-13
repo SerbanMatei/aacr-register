@@ -1,17 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup } from '@angular/forms';
 import { EMAIL_FORM_CONTROL_NAME, FULLNAME_FORM_CONTROL_NAME, PASSWORD_FORM_CONTROL_NAME, REGISTRATION_FORM, USERNAME_FORM_CONTROL_NAME } from '../../models/constants';
 import { RegistrationModel } from '../../models/view-models';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { getEmailErrorMessage, getFullNameErrorMessage, getPasswordErrorMessage, getUsernameErrorMessage } from '../../utils/validation-form';
 import { RegisterStore } from './register.store';
+import { of, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss']
 })
-export class RegisterComponent implements OnInit {
+export class RegisterComponent implements OnInit, OnDestroy {
   readonly USERNAME_FORM_CONTROL_NAME = USERNAME_FORM_CONTROL_NAME;
   readonly PASSWORD_FORM_CONTROL_NAME = PASSWORD_FORM_CONTROL_NAME;
   readonly EMAIL_FORM_CONTROL_NAME = EMAIL_FORM_CONTROL_NAME;
@@ -26,6 +27,7 @@ export class RegisterComponent implements OnInit {
 
   loading$ = this.registerStore.loading$;
   registerStatus$ = this.registerStore.status$;
+  registerStatusSubscription: Subscription;
 
   get userNameFormControl(): AbstractControl {
     return this.registerFormGroup.get(USERNAME_FORM_CONTROL_NAME);
@@ -57,12 +59,12 @@ export class RegisterComponent implements OnInit {
 
   registerUser(): void {
     if (this.registerFormGroup.valid) {
-      this.registerStore.registerUser(this.getRegistrationFormModel());
+      this.registerStore.registerUser(of(this.getRegistrationFormModel()));
     }
   }
 
   private initializeRegisterStatusChange() {
-    this.registerStatus$.subscribe(status => {
+    this.registerStatusSubscription = this.registerStatus$.subscribe(status => {
       if (status === 'success') {
         this.openSnackBar('Successfully registered');
         this.clearForm();
@@ -120,5 +122,9 @@ export class RegisterComponent implements OnInit {
 
   private openSnackBar(message: string) {
     this.snackBar.open(message, 'Close', { duration: 3000 });
+  }
+
+  ngOnDestroy(): void {
+    this.registerStatusSubscription.unsubscribe();
   }
 }
